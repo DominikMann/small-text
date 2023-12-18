@@ -290,6 +290,9 @@ class TransformerBasedClassification(TransformerBasedEmbeddingMixin, PytorchClas
         self.optimizer = None
         self.scheduler = None
 
+        self.warm_up = warm_up
+        self.warm_up_ratio = warm_up_ratio
+
         self.validation_set_size = validation_set_size
         self.validations_per_epoch = validations_per_epoch
 
@@ -381,7 +384,7 @@ class TransformerBasedClassification(TransformerBasedEmbeddingMixin, PytorchClas
                               model_selection, fit_optimizer, fit_scheduler)
 
     def _fit_main(self, sub_train, sub_valid, weights, early_stopping, model_selection,
-                  optimizer, scheduler, warum_up, warm_up_ratio):
+                  optimizer, scheduler, warm_up, warm_up_ratio):
         if self.model is None:
             encountered_num_classes = get_num_labels(sub_train.y)
 
@@ -397,8 +400,8 @@ class TransformerBasedClassification(TransformerBasedEmbeddingMixin, PytorchClas
                                                                  scheduler,
                                                                  self.num_epochs,
                                                                  sub_train, 
-                                                                 warm_up,
-                                                                 warm_up_ratio)
+                                                                 self.warm_up,
+                                                                 self.warm_up_ratio)
         self.model = self.model.to(self.device)
 
         with tempfile.TemporaryDirectory(dir=get_tmp_dir_base()) as tmp_dir:
