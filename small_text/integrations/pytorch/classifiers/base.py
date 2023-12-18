@@ -224,7 +224,7 @@ class PytorchClassifier(PytorchModelSelectionMixin, Classifier):
                 if warm_up:
                     from transformers import get_linear_schedule_with_warmup
                     warm_up_steps = int(warm_up_ratio * len(sub_train))
-                    print(warm_up_steps)
+                    print(f'Warm-up steps: {warm_up_steps}')
                     scheduler = get_linear_schedule_with_warmup(optimizer,
                                                                 num_warmup_steps=warm_up_steps,
                                                                 num_training_steps=steps*num_epochs)
