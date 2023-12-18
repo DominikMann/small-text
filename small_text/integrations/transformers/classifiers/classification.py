@@ -381,7 +381,7 @@ class TransformerBasedClassification(TransformerBasedEmbeddingMixin, PytorchClas
                                                      use_sample_weights=weights is not None)
 
         return self._fit_main(sub_train, sub_valid, sub_train_weights, early_stopping,
-                              model_selection, fit_optimizer, fit_scheduler)
+                              model_selection, fit_optimizer, fit_scheduler, warm_up, warm_up_ratio)
 
     def _fit_main(self, sub_train, sub_valid, weights, early_stopping, model_selection,
                   optimizer, scheduler, warm_up, warm_up_ratio):
