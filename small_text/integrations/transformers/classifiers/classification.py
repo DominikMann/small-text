@@ -314,7 +314,7 @@ class TransformerBasedClassification(TransformerBasedEmbeddingMixin, PytorchClas
         self.model_selection_manager = None
 
     def fit(self, train_set, validation_set=None, weights=None, early_stopping=None,
-            model_selection=None, optimizer=None, scheduler=None, warm_up=warm_up, warm_up_ratio=warm_up_ratio):
+            model_selection=None, optimizer=None, scheduler=None):
         """Trains the model using the given train set.
 
         Parameters
@@ -375,6 +375,9 @@ class TransformerBasedClassification(TransformerBasedEmbeddingMixin, PytorchClas
 
         fit_optimizer = optimizer if optimizer is not None else self.optimizer
         fit_scheduler = scheduler if scheduler is not None else self.scheduler
+
+        warm_up = self.warm_up
+        warm_up_ratio = self.warm_up_ratio
 
         self.class_weights_ = self.initialize_class_weights(sub_train)
         self.criterion = self._get_default_criterion(self.class_weights_,
