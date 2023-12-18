@@ -314,7 +314,7 @@ class TransformerBasedClassification(TransformerBasedEmbeddingMixin, PytorchClas
         self.model_selection_manager = None
 
     def fit(self, train_set, validation_set=None, weights=None, early_stopping=None,
-            model_selection=None, optimizer=None, scheduler=None):
+            model_selection=None, optimizer=None, scheduler=None, warm_up=self.warm_up, warm_up_ratio=self.warm_up_ratio):
         """Trains the model using the given train set.
 
         Parameters
@@ -381,10 +381,10 @@ class TransformerBasedClassification(TransformerBasedEmbeddingMixin, PytorchClas
                                                      use_sample_weights=weights is not None)
 
         return self._fit_main(sub_train, sub_valid, sub_train_weights, early_stopping,
-                              model_selection, fit_optimizer, fit_scheduler)
+                              model_selection, fit_optimizer, fit_scheduler, warm_up, warm_up_ratio)
 
     def _fit_main(self, sub_train, sub_valid, weights, early_stopping, model_selection,
-                  optimizer, scheduler):
+                  optimizer, scheduler, warm_up, warm_up_ratio):
         if self.model is None:
             encountered_num_classes = get_num_labels(sub_train.y)
 
@@ -400,8 +400,8 @@ class TransformerBasedClassification(TransformerBasedEmbeddingMixin, PytorchClas
                                                                  scheduler,
                                                                  self.num_epochs,
                                                                  sub_train, 
-                                                                 self.warm_up,
-                                                                 self.warm_up_ratio)
+                                                                 warm_up,
+                                                                 warm_up_ratio)
         self.model = self.model.to(self.device)
 
         with tempfile.TemporaryDirectory(dir=get_tmp_dir_base()) as tmp_dir:
