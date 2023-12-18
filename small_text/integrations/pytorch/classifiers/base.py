@@ -196,7 +196,7 @@ class PytorchClassifier(PytorchModelSelectionMixin, Classifier):
 
         return ModelSelection()
 
-    def _get_optimizer_and_scheduler(self, optimizer, scheduler, num_epochs, sub_train):
+    def _get_optimizer_and_scheduler(self, optimizer, scheduler, num_epochs, sub_train, warm_up, warm_up_ratio):
 
         if optimizer is None or scheduler is None:
 
@@ -204,11 +204,13 @@ class PytorchClassifier(PytorchModelSelectionMixin, Classifier):
                                                                             scheduler,
                                                                             num_epochs,
                                                                             sub_train,
-                                                                            self.lr)
+                                                                            self.lr, 
+                                                                            warm_up,
+                                                                            warm_up_ratio)
         return optimizer, scheduler
 
     def _initialize_optimizer_and_scheduler(self, optimizer, scheduler, num_epochs,
-                                            sub_train, base_lr):
+                                            sub_train, base_lr, warm_up, warm_up_ratio):
 
         steps = (len(sub_train) // self.mini_batch_size) \
                 + int(len(sub_train) % self.mini_batch_size != 0)
@@ -218,11 +220,18 @@ class PytorchClassifier(PytorchModelSelectionMixin, Classifier):
                 if optimizer is None else optimizer
 
         if scheduler == 'linear':
-            try:
+            if warm_up:
                 from transformers import get_linear_schedule_with_warmup
+                warm_up_steps = warm_up_ratio * len(sub_train)
                 scheduler = get_linear_schedule_with_warmup(optimizer,
-                                                            num_warmup_steps=0,
+                                                            num_warmup_steps=warm_up_steps,
                                                             num_training_steps=steps*num_epochs)
+            else:    
+                try:
+                    from transformers import get_linear_schedule_with_warmup
+                    scheduler = get_linear_schedule_with_warmup(optimizer,
+                                                                num_warmup_steps=0,
+                                                                num_training_steps=steps*num_epochs)
             except ImportError:
                 raise ValueError('Linear scheduler is only available when the transformers '
                                  'integration is installed ')
