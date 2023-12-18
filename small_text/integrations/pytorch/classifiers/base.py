@@ -220,14 +220,15 @@ class PytorchClassifier(PytorchModelSelectionMixin, Classifier):
                 if optimizer is None else optimizer
 
         if scheduler == 'linear':
-            if warm_up:
-                from transformers import get_linear_schedule_with_warmup
-                warm_up_steps = warm_up_ratio * len(sub_train)
-                scheduler = get_linear_schedule_with_warmup(optimizer,
-                                                            num_warmup_steps=warm_up_steps,
-                                                            num_training_steps=steps*num_epochs)
-            else:    
-                try:
+            try:
+                if warm_up:
+                    from transformers import get_linear_schedule_with_warmup
+                    warm_up_steps = warm_up_ratio * len(sub_train)
+                    print(warm_up_steps)
+                    scheduler = get_linear_schedule_with_warmup(optimizer,
+                                                                num_warmup_steps=warm_up_steps,
+                                                                num_training_steps=steps*num_epochs)
+                else:
                     from transformers import get_linear_schedule_with_warmup
                     scheduler = get_linear_schedule_with_warmup(optimizer,
                                                                 num_warmup_steps=0,
