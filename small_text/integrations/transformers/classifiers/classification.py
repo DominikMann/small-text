@@ -597,9 +597,7 @@ class TransformerBasedClassification(TransformerBasedEmbeddingMixin, PytorchClas
                          f'\tTrain Set Size: {len(sub_train)}\n'
                          f'\tLoss: {train_loss:.4f}(train)\t|\tAcc: {train_acc * 100:.1f}%(train)'
                          f'{valid_loss_txt}',
-                         verbosity=VERBOSITY_MORE_VERBOSE)#
-        print(f'Train Loss: {train_loss}')
-        print(f'Val Loss: {valid_loss}')
+                         verbosity=VERBOSITY_MORE_VERBOSE)
 
     def validate(self, validation_set):
 
